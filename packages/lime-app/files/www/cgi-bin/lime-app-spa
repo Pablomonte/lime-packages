@@ -1,0 +1,37 @@
+#!/bin/sh
+# SPA Router for lime-app
+# This script handles 404 errors and serves the index.html for client-side routing
+
+# Get the requested path
+REQUEST_URI="${REQUEST_URI:-$PATH_INFO}"
+
+# Check if requesting a lime-app route (starts with /app/)
+case "$REQUEST_URI" in
+    /app/*)
+        # Extract route after /app/
+        ROUTE="${REQUEST_URI#/app/}"
+        
+        # If it's a file with extension (like .js, .css, .svg), return 404
+        case "$ROUTE" in
+            *.js|*.css|*.svg|*.png|*.jpg|*.gif|*.json|*.html|*.map)
+                echo "Status: 404 Not Found"
+                echo "Content-Type: text/plain"
+                echo ""
+                echo "File not found"
+                exit 0
+                ;;
+        esac
+        
+        # For routes without extension, serve index.html
+        echo "Content-Type: text/html"
+        echo ""
+        cat /www/app/index.html
+        exit 0
+        ;;
+esac
+
+# Not a lime-app route, return 404
+echo "Status: 404 Not Found"
+echo "Content-Type: text/plain"
+echo ""
+echo "Not found"

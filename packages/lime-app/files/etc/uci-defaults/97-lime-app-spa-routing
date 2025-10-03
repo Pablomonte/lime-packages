@@ -1,0 +1,9 @@
+#!/bin/sh
+# Configure uhttpd to use CGI script for handling 404 errors in lime-app
+# This enables SPA routing for direct URL access
+
+# Set error page handler to our CGI script
+uci set uhttpd.main.error_page='/cgi-bin/lime-app-spa'
+uci commit uhttpd
+
+exit 0
