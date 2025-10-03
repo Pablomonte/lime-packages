@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lime-app
 # Development mode - using local repository
-PKG_VERSION:=dev-$(shell cd ../../repos/lime-app 2>/dev/null && git rev-parse --short HEAD || echo "local")
+PKG_VERSION:=dev-$(shell cd $(TOPDIR)/../repos/lime-app 2>/dev/null && git rev-parse --short HEAD || echo "local")
 PKG_RELEASE:=2
 
 # No download needed - using local sources
@@ -19,7 +19,7 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Prepare
 	$(INSTALL_DIR) $(PKG_BUILD_DIR)
 	# Copy the built assets from local lime-app repository
-	$(CP) ../../repos/lime-app/build $(PKG_BUILD_DIR)/
+	$(CP) $(TOPDIR)/../repos/lime-app/build $(PKG_BUILD_DIR)/
 endef
 
 define Package/$(PKG_NAME)
