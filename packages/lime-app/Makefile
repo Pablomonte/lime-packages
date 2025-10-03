@@ -6,14 +6,21 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lime-app
-PKG_VERSION:=v0.2.27
+# Development mode - using local repository
+PKG_VERSION:=dev-$(shell cd ../../repos/lime-app 2>/dev/null && git rev-parse --short HEAD || echo "local")
 PKG_RELEASE:=2
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_HASH:=c2b19242166d8cdce487d68622fcf1d2857053059a3f47b51417754161f8b57c
-PKG_SOURCE_URL:=https://github.com/Fede654/lime-app/releases/download/$(PKG_VERSION)
+# No download needed - using local sources
+
 
 include $(INCLUDE_DIR)/package.mk
+
+# Use local lime-app build directory
+define Build/Prepare
+	$(INSTALL_DIR) $(PKG_BUILD_DIR)
+	# Copy the built assets from local lime-app repository
+	$(CP) ../../repos/lime-app/build $(PKG_BUILD_DIR)/
+endef
 
 define Package/$(PKG_NAME)
 	CATEGORY:=LibreMesh
@@ -37,7 +44,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/
 	$(CP) ./files/* $(1)/
 	$(INSTALL_DIR) $(1)/www/app/
-	$(CP) $(BUILD_DIR)/build/* $(1)/www/app/
+	$(CP) $(PKG_BUILD_DIR)/build/* $(1)/www/app/
 endef
 
 define Package/$(PKG_NAME)/postinst
