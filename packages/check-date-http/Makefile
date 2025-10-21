@@ -12,7 +12,7 @@ define Package/$(PKG_NAME)
 	MAINTAINER:=Gioacchino Mazzurco <gio@altermundi.net>
 	URL:=http://libremesh.org
 	DEPENDS:=+libuci-lua +lua \
-		+luci-lib-httpclient
+		+uclient-fetch
 	PKGARCH:=all
 endef
 

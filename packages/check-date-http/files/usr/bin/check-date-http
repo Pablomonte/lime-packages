@@ -16,8 +16,41 @@
 --! You should have received a copy of the GNU Affero General Public License
 --! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-local http = require("luci.httpclient")
 local libuci = require("uci")
+
+-- Function to get HTTP Date header using uclient-fetch
+-- Returns the Date header string or nil on error
+local function get_http_date(url)
+	-- Build uclient-fetch command:
+	-- -q: quiet mode
+	-- -O -: output to stdout
+	-- --header-only: fetch only headers (like HTTP HEAD)
+	-- --timeout=5: 5 seconds timeout for send and receive
+	-- --max-redirect=0: don't follow redirects
+	local cmd = string.format(
+		"uclient-fetch -q -O - --header-only --timeout=5 --max-redirect=0 '%s' 2>&1",
+		url
+	)
+
+	local handle = io.popen(cmd)
+	if not handle then
+		return nil
+	end
+
+	local headers = handle:read("*a")
+	local success, exit_type, exit_code = handle:close()
+
+	-- Check if command executed successfully
+	-- handle:close() returns: true, "exit", code on success
+	if not success or exit_type ~= "exit" or exit_code ~= 0 then
+		return nil
+	end
+
+	-- Parse Date header from output
+	-- Look for "Date: " followed by the date string
+	local date = headers:match("Date: ([^\r\n]+)")
+	return date
+end
 
 
 local config = libuci:cursor()
@@ -34,22 +67,15 @@ local localCurrDate = assert(io.popen("date --utc -Iminutes", 'r'):read())
 local lFormat="(%d+)-(%d+)-(%d+)T(%d+):(%d+)UTC"
 local lYear, lMonth, lDay, lHour, lMin = localCurrDate:match(lFormat)
 
-local httpOptions = {}
-httpOptions.rcvtimeo = 5
-httpOptions.sndtimeo = 5
-httpOptions.depth = 0 -- Avoid annoying redirects
-httpOptions.method = 'HEAD'
-local success, response, algo = pcall(http.request_raw, url, httpOptions)
+-- Get HTTP Date header using uclient-fetch
+local success, date_header = pcall(get_http_date, url)
 
-if(not success) then
-	print(arg[0], "HTTP request failed", url, success, response, algo)
+if not success or not date_header then
+	print(arg[0], "HTTP request failed", url)
 	os.exit(42)
-elseif response == nil then
-	print(arg[0], "The server cannot be reached", url)
-	os.exit(43)
 end
 
-local s = algo['headers']['Date']
+local s = date_header
 local p="%a+, (%d+) (%a+) (%d+) (%d+):(%d+):(%d+) GMT"
 local day, month, year, hour, min, sec = s:match(p)
 local MON = { Jan="01", Feb="02", Mar="03", Apr="04", May="05", Jun="06", Jul="07", Aug="08", Sep="09", Oct="10", Nov="11", Dec="12"}
@@ -79,8 +105,6 @@ if(skewDetected) then
 	       " local "..currDate.." "..url.." "..newDate )
 
 	if resetDate then
-		local newDate = string.format(
-			"%s.%s.%s-%s:%s:%s", year, month, day, hour, min, sec )
 		os.execute("date --utc --set "..newDate)
 	end
 	if restartSysntpd then os.execute("/etc/init.d/sysntpd restart") end
