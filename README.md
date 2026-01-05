@@ -208,6 +208,54 @@ sponsor](https://opencollective.com/libremesh#sponsor)]
 <a href="https://opencollective.com/libremesh/sponsor/8/website" target="_blank"><img src="https://opencollective.com/libremesh/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/libremesh/sponsor/9/website" target="_blank"><img src="https://opencollective.com/libremesh/sponsor/9/avatar.svg"></a>
 
+## Branch: feature/eupgrade-metadata-generation
+
+Sistema de generación de metadata para eupgrade compatible con LibreRouter ART fix installer.
+
+### Componentes
+
+- **generate-metadata.sh** - Genera JSON metadata desde installers
+- **build-installer.sh** - Construye self-extracting installer
+- **librerouter-art-fix-installer.sh** - Installer principal para ART partition fix
+- **METADATA-GENERATION.md** - Documentación completa de deployment
+
+### Uso Rápido
+
+```bash
+cd packages/eupgrade
+
+# Build installer
+./build-installer.sh /path/to/firmware.bin
+
+# Generate metadata
+./generate-metadata.sh librerouter-v1-sysupgrade-installer.sh
+
+# Review output
+cat librerouter-librerouter-v1.json
+```
+
+### Testing
+
+```bash
+# Con URL custom
+./generate-metadata.sh installer.sh https://repo.librerouter.org/lros/releases/2025_10/targets/ath79/generic
+
+# Con firma real
+SIGNING_KEY=/path/to/private.key ./generate-metadata.sh installer.sh
+```
+
+### Documentación
+
+Ver [METADATA-GENERATION.md](packages/eupgrade/METADATA-GENERATION.md) para:
+
+- Deployment workflow completo
+- Estructura de directorios en servidor
+- Generación de firmas usign
+- Troubleshooting
+
+**Basado en:** javierbrk/final-release
+**Status:** En desarrollo - Fork personal
+
 [1]: https://libremesh.org/docs/hardware/
 [OpenWrt-ToH]: https://openwrt.org/toh/start
 [4]: https://libremesh.org/howitworks.html

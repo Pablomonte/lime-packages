@@ -1,0 +1,17 @@
+# Generated metadata files
+*.json
+*.json.sig
+
+# Test/development keys
+*.key
+public.key
+private.key
+
+# Downloaded dependencies
+safe-upgrade-fixed.lua
+
+# Build artifacts
+*.swp
+*.swo
+*~
+.DS_Store
