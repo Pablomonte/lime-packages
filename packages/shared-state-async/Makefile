@@ -10,8 +10,8 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=shared-state-async
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/javierbrk/shared-state-async.git
-PKG_SOURCE_VERSION:=use-statically-linked-stdlib
+PKG_SOURCE_URL:=https://github.com/Pablomonte/shared-state-async.git
+PKG_SOURCE_VERSION:=e6dbdf05f492404a4c06fd7f7f8e5718cc627053
 #PKG_SOURCE_VERSION:=merge_with_version
 PKG_MAINTAINER:=Asociación Civil Altermundi <info@altermundi.net>
 PKG_LICENSE:=AGPL-3.0-only
