@@ -35,6 +35,13 @@ function wireless.scandevices()
 		local path = dev.path
 		if path then
 			local _, numberOfMatches = fs.glob("/sys/devices/"..path.."/ieee80211/phy*")
+			if numberOfMatches == 0 then
+				--! Platform-bus PCIe controllers (e.g. MT7621) live under
+				--! /sys/devices/platform/ but uci stores the path without
+				--! that prefix, the same way netifd tolerates it
+				_, numberOfMatches = fs.glob(
+					"/sys/devices/platform/"..path.."/ieee80211/phy*")
+			end
 			if numberOfMatches > 0 then
 				devices[dev[".name"]] = dev
 			else
